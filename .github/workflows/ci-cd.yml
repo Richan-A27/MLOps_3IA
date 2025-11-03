@@ -1,0 +1,35 @@
+name: CI/CD for NIFTY50 Streamlit App
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Train model
+      run: |
+        python nifty50_train.py
+
+    - name: Build Docker image
+      run: |
+        docker build -t nifty50-app .
+
+    - name: Push to Render (via auto deploy)
+      run: echo "✅ Build complete — Render will auto-deploy on push to main"
